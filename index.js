@@ -4,6 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 const {Server} = require("socket.io");
 const io = new Server(server);
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -40,6 +41,11 @@ io.on('connection', (socket) => {
         // This will emit the event to all connected sockets
         io.emit('update status', data);
     });
+
+    socket.on('start game', () => {
+        io.emit('start game');
+    });
+
 });
 
 server.listen(process.env.PORT, () => {

@@ -1,0 +1,71 @@
+:root {
+    --primary-color: #8b52ff;
+    --primary-color-transparent: #8b52ff2b;
+}
+
+body {
+    font-family: Helvetica, arial, sans-serif;
+    background-image: url(footer_lodyas.png);
+    color: var(--primary-color);
+}
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.click-area {
+    height: 300px;
+    width: 300px;
+    border-radius: 100%;
+    font-size: 44px;
+    border: 3px solid var(--primary-color);
+    margin: 20px;
+    text-align: center;
+    /*transition: all .4s ease-in-out;*/
+}
+.click-area ::selection {
+    background-color: transparent;
+}
+.click-area:active {
+    background-color: var(--primary-color);
+}
+small {
+    font-size: 24px;
+}
+main {
+    /*background-color: var(--primary-color-transparent);*/
+}
+nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color-transparent);
+    padding: 20px;
+    color: #e1e1e1;
+}
+header {
+    /*position: fixed;*/
+    justify-content: inherit !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--primary-color-transparent);
+    padding: 20px;
+    color: #e1e1e1;
+}
+.visible {
+    display: flex !important;
+}
+.go {
+    display: none;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background-color: #008000ab;
+    color: #fff;
+    font-size: 100px;
+    top: 0;
+    left: 0;
+
+}
