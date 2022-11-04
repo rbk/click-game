@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Click Game</title>
+    <style>
+        body {
+            background-color: #9370db3b;
+            font-family: Helvetica, arial, sans-serif;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .click-area {
+            height: 300px;
+            width: 300px;
+            border-radius: 100%;
+            font-size: 44px;
+            border: 3px solid #000;
+            margin: 20px;
+            text-align: center;
+
+        }
+        .click-area ::selection {
+            background-color: transparent;
+        }
+        .click-area:active {
+            background-color: #80008061;
+        }
+        small {
+            font-size: 24px;
+        }
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 20px;
+            color: #e1e1e1;
+        }
+        .visible {
+            display: flex !important;
+        }
+        .go {
+            display: none;
+            position: fixed;
+            height: 100vh;
+            width: 100vw;
+            background-color: #008000ab;
+            color: #fff;
+            font-size: 100px;
+            top: 0;
+            left: 0;
+
+        }
+    </style>
+</head>
+<body>
+<h1>Click Game</h1>
+<p>Objective: Most clicks within 10 seconds wins.</p>
+<div class="flex-center h-100">
+    <div id="player1" class="click-area flex-center">
+        <div>
+        <div class="counter">0</div>
+        <small>Player 1</small>
+        </div>
+    </div>
+    <div id="player2" class="click-area flex-center">
+        <div>
+        <div class="counter">0</div>
+        <small>Player 2</small>
+        </div>
+    </div>
+
+</div>
+<nav>
+    <h3>Space bar with reset / start the game</h3>
+</nav>
+<div class="go flex-center">
+    <div>Go!</div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+
+    const player1 = document.getElementById('player1');
+    const player1Counter = player1.querySelector('.counter');
+    const player2 = document.getElementById('player2');
+    const player2Counter = player2.querySelector('.counter');
+    const go = document.querySelector('.go');
+    var inProgress = false;
+    var globalGame = {}
+    var gameTimer;
+
+    function setCounters(game) {
+        player1Counter.innerText = game.p1;
+        player2Counter.innerText = game.p2;
+    }
+
+    socket.on('send game', function(game) {
+        console.log(game)
+        setCounters(game)
+    });
+
+    const startGame = () => {
+        clearTimeout(gameTimer);
+        go.classList.add('visible');
+        setTimeout(() => {
+            go.classList.remove('visible');
+        }, 400);
+        inProgress = true;
+        socket.emit('reset');
+        setCounters({
+            p1: 0,
+            p2: 0
+        })
+        gameTimer = setTimeout(() => {
+            console.log(globalGame)
+            inProgress = false;
+            if (globalGame.p1 > globalGame.p2) {
+                alert('Player 1 Wins!')
+            }
+            if (globalGame.p1 < globalGame.p2) {
+                alert('Player 2 Wins!')
+            }
+            if (globalGame.p1 === globalGame.p2) {
+                alert('It is a TIE!!!')
+            }
+        }, 10*1000)
+    }
+
+    window.addEventListener('keyup', (e) => {
+        console.log(e.code)
+        if (e.code === 'Space') {
+            startGame();
+        }
+    })
+
+    player1.addEventListener('click', () => {
+        if (inProgress) {
+            socket.emit('click', 'player1');
+        }
+    });
+    player2.addEventListener('click', () => {
+        if (inProgress) {
+            socket.emit('click', 'player2');
+        }
+    });
+
+    socket.on('update status', function(game) {
+        console.log('game', game)
+        setCounters(game)
+        globalGame = game;
+    });
+
+</script>
+</body>
+</html>
